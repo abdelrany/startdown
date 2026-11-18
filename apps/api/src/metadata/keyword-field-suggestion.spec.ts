@@ -41,4 +41,35 @@ describe('suggestKeywordField', () => {
       suggestKeywordField(german, [row('k1', true)], 'de').addedTerms,
     ).toEqual(['yoga kurs']);
   });
+
+  describe('with the words the title and subtitle already index', () => {
+    const listing = {
+      titleWords: ['lensplate', 'calorie', 'counter'],
+      subtitleWords: ['food', 'diary', 'macro', 'tracker'],
+    };
+    const uncovered = [
+      item('k1', 'calorie tracker', 9),
+      item('k2', 'weight tracker', 8),
+      item('k3', 'macro calculator', 7),
+      item('k4', 'tdee calculator', 6),
+    ];
+    const rows = uncovered.map(({ keywordId }) => row(keywordId, true));
+
+    it('leaves out the words the listing holds and never repeats a word', () => {
+      expect(
+        suggestKeywordField(uncovered, rows, 'en-US', listing).addedTerms,
+      ).toEqual(['weight', 'calculator', 'tdee']);
+    });
+
+    it('counts a plural in the listing as the singular word', () => {
+      expect(
+        suggestKeywordField(
+          [item('k1', 'meal tracker', 9)],
+          [row('k1', true)],
+          'en-US',
+          { titleWords: ['meals'], subtitleWords: ['trackers'] },
+        ).addedTerms,
+      ).toEqual([]);
+    });
+  });
 });
