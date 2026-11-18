@@ -130,6 +130,7 @@ export class MetadataService {
               active.filter((item) => item.country === market),
               coverage.filter((row) => row.country === market),
               viewLocalization,
+              context,
             )
           : null,
       ...(screenshotText ? { screenshotText } : {}),
